@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 import employees from '../../../data/employees.json';
 import { extractSkills } from '../../../lib/ai/extract-skills';
 
-// Safe dynamic access to socket emitter
+// Dynamic ESM import of socket emitter matching lib/ai pattern
 let emitExtractionProgress = () => false;
 try {
-  const socketModule = require('../../../server/socket');
-  if (socketModule && socketModule.emitExtractionProgress) {
-    emitExtractionProgress = socketModule.emitExtractionProgress;
+  const socketModule = await import('../../../server/socket.js');
+  if (socketModule && (socketModule.emitExtractionProgress || socketModule.default?.emitExtractionProgress)) {
+    emitExtractionProgress = socketModule.emitExtractionProgress || socketModule.default.emitExtractionProgress;
   }
 } catch (e) {
   // Socket fallback
