@@ -2,19 +2,37 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Eye, EyeOff, ShieldCheck, ArrowUpRight, Loader2 } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  ArrowUpRight,
+  Loader2,
+  Star,
+  Send,
+  XCircle,
+  CheckCircle2,
+  GitCompare,
+} from 'lucide-react';
 
 /**
- * Renders an anonymized candidate pitch card with pure weighted telemetry breakdown, animated reveal transition, and tactile hover lift.
- * @param {Object} props - Component properties.
- * @param {Object} props.candidate - Candidate data with ID, scores, breakdown, and pitch (strictly zero pre-loaded identity fields).
- * @param {string} props.roleId - Associated role ID.
- * @returns {JSX.Element}
+ * Renders an anonymized candidate pitch card with pure weighted telemetry breakdown,
+ * shortlist management, identity reveal request workflow, and side-by-side compare selection.
  */
-export default function PitchCard({ candidate, roleId }) {
+export default function PitchCard({
+  candidate,
+  roleId,
+  roleTitle = 'Target Role',
+  isCompared = false,
+  onToggleCompare,
+  onPass,
+}) {
   const [isRevealed, setIsRevealed] = useState(false);
   const [identity, setIdentity] = useState(null);
   const [isLoadingIdentity, setIsLoadingIdentity] = useState(false);
+  const [isShortlisted, setIsShortlisted] = useState(false);
+  const [revealRequested, setRevealRequested] = useState(false);
+  const [isRequestingReveal, setIsRequestingReveal] = useState(false);
 
   const score = candidate.score || 85;
   const breakdown = candidate.breakdown || {
@@ -56,8 +74,97 @@ export default function PitchCard({ candidate, roleId }) {
     }
   };
 
+  const handleToggleShortlist = async () => {
+    try {
+      const nextState = !isShortlisted;
+      setIsShortlisted(nextState);
+      await fetch('/api/shortlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: nextState ? 'add' : 'remove',
+          candidateId: candidate.id,
+          roleId: roleId || 'role_distributed_systems',
+        }),
+      });
+    } catch (err) {
+      console.error('Shortlist update error:', err);
+    }
+  };
+
+  const handleRequestRevealConsent = async () => {
+    setIsRequestingReveal(true);
+    try {
+      const res = await fetch('/api/reveal-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          candidateId: candidate.id,
+          roleId: roleId || 'role_distributed_systems',
+          roleTitle: roleTitle,
+          note: `Manager shortlisted candidate #${candidate.id.replace('emp-', '')} based on top match score (${score}%).`,
+        }),
+      });
+      if (res.ok) {
+        setRevealRequested(true);
+      }
+    } catch (err) {
+      console.error('Failed to request reveal:', err);
+    } finally {
+      setIsRequestingReveal(false);
+    }
+  };
+
   return (
-    <div className="group flex flex-col justify-between rounded-xl border border-talent-border bg-talent-card p-5 sm:p-6 shadow-card-elevated hover:border-talent-border-highlight hover-lift transition-all duration-200">
+    <div
+      className={`group flex flex-col justify-between rounded-xl border bg-talent-card p-5 sm:p-6 shadow-card-elevated hover-lift transition-all duration-200 ${
+        isCompared
+          ? 'border-talent-teal ring-2 ring-talent-teal/30 bg-talent-teal/5'
+          : 'border-talent-border hover:border-talent-border-highlight'
+      }`}
+    >
+      {/* Top Controls: Compare Checkbox, Shortlist, Pass */}
+      <div className="flex items-center justify-between border-b border-talent-border/60 pb-3 mb-4 text-xs">
+        <label className="flex items-center gap-1.5 cursor-pointer font-mono text-[11px] text-talent-muted hover:text-talent-teal">
+          <input
+            type="checkbox"
+            checked={isCompared}
+            onChange={() => onToggleCompare && onToggleCompare(candidate)}
+            className="rounded border-talent-border bg-talent-surface text-talent-teal focus:ring-talent-teal focus:ring-offset-0 h-3.5 w-3.5"
+          />
+          <span className="flex items-center gap-1">
+            <GitCompare className="h-3 w-3" />
+            <span>Compare</span>
+          </span>
+        </label>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleToggleShortlist}
+            className={`flex items-center gap-1 rounded-lg px-2 py-1 font-mono text-[10px] font-bold transition-colors ${
+              isShortlisted
+                ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40'
+                : 'bg-talent-surface text-talent-muted hover:text-talent-text border border-talent-border'
+            }`}
+            title="Add to manager shortlist"
+          >
+            <Star className={`h-3 w-3 ${isShortlisted ? 'fill-amber-400 text-amber-400' : ''}`} />
+            <span>{isShortlisted ? 'Shortlisted' : 'Shortlist'}</span>
+          </button>
+
+          {onPass && (
+            <button
+              type="button"
+              onClick={() => onPass(candidate.id)}
+              className="p-1 rounded-lg text-talent-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              title="Pass candidate"
+            >
+              <XCircle className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
       {/* Top Header: Responsive Layout to Avoid Crowding */}
       <div>
         <div className="flex items-start justify-between gap-3 sm:gap-4">
@@ -194,41 +301,61 @@ export default function PitchCard({ candidate, roleId }) {
       </div>
 
       {/* Card Actions Footer */}
-      <div className="mt-6 flex items-center justify-between border-t border-talent-border pt-4">
-        <button
-          type="button"
-          onClick={handleToggleReveal}
-          disabled={isLoadingIdentity}
-          aria-label={isRevealed ? `Conceal candidate ${candidate.id} identity` : `Reveal candidate ${candidate.id} identity`}
-          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal transition-all ${
-            isRevealed
-              ? 'bg-talent-surface text-talent-subtext border border-talent-border hover:text-talent-text'
-              : 'bg-talent-purple/20 text-talent-purple border border-talent-purple/40 hover:bg-talent-purple/30 shadow-glow-purple'
-          }`}
-        >
-          {isLoadingIdentity ? (
-            <>
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              <span>Fetching Identity...</span>
-            </>
-          ) : isRevealed ? (
-            <>
-              <EyeOff className="h-3.5 w-3.5" />
-              <span>Conceal Identity</span>
-            </>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-talent-border pt-4">
+        <div className="flex items-center gap-2">
+          {revealRequested ? (
+            <span className="flex items-center gap-1 rounded bg-teal-500/15 px-2.5 py-1 text-[11px] font-mono text-talent-teal border border-talent-teal/30">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span>Consent Dispatched</span>
+            </span>
           ) : (
-            <>
-              <Eye className="h-3.5 w-3.5" />
-              <span>Reveal Identity</span>
-            </>
+            <button
+              type="button"
+              onClick={handleRequestRevealConsent}
+              disabled={isRequestingReveal}
+              className="flex items-center gap-1 rounded-lg border border-talent-purple/30 bg-talent-purple/10 px-2.5 py-1 text-xs font-mono font-semibold text-talent-purple hover:bg-talent-purple/20 transition-all"
+              title="Send identity reveal request to candidate inbox"
+            >
+              <Send className="h-3 w-3" />
+              <span>{isRequestingReveal ? 'Sending...' : 'Request Reveal'}</span>
+            </button>
           )}
-        </button>
+
+          <button
+            type="button"
+            onClick={handleToggleReveal}
+            disabled={isLoadingIdentity}
+            aria-label={isRevealed ? `Conceal candidate ${candidate.id} identity` : `Reveal candidate ${candidate.id} identity`}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal transition-all ${
+              isRevealed
+                ? 'bg-talent-surface text-talent-subtext border border-talent-border hover:text-talent-text'
+                : 'bg-talent-card text-talent-muted border border-talent-border hover:text-talent-text hover:border-talent-teal/40'
+            }`}
+          >
+            {isLoadingIdentity ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <span>Fetching...</span>
+              </>
+            ) : isRevealed ? (
+              <>
+                <EyeOff className="h-3.5 w-3.5" />
+                <span>Conceal</span>
+              </>
+            ) : (
+              <>
+                <Eye className="h-3.5 w-3.5" />
+                <span>Direct Reveal</span>
+              </>
+            )}
+          </button>
+        </div>
 
         <Link
           href={`/roadmap/${candidate.id}/${roleId || 'role-dist-arch'}`}
           className="flex items-center gap-1 text-xs font-medium text-talent-teal hover:text-talent-teal-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal rounded px-1.5 py-0.5 transition-colors"
         >
-          <span>View Career GPS</span>
+          <span>Career GPS</span>
           <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
       </div>

@@ -26,18 +26,36 @@ import {
  */
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, login } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isPersonaOpen, setIsPersonaOpen] = useState(false);
   const mobileMenuRef = useRef(null);
   const userDropdownRef = useRef(null);
+  const personaRef = useRef(null);
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: Sparkles },
-    { href: '/employee/emp-101', label: 'Hidden Skill Detective', icon: Eye },
-    { href: '/roadmap/emp-101/role-dist-arch', label: 'Career GPS', icon: Compass },
-    { href: '/match/role-dist-arch', label: 'Blind Matching', icon: ShieldCheck },
+    { href: '/detective', label: 'Skill Detective', icon: Eye },
+    { href: '/match/role_distributed_systems', label: 'Blind Matching', icon: ShieldCheck },
+    { href: '/roadmap/emp-101/role_distributed_systems', label: 'Career GPS', icon: Compass },
+    { href: '/assistant', label: 'Career Copilot', icon: Cpu },
+    { href: '/admin', label: 'HR Analytics', icon: Sparkles },
   ];
+
+  const handleQuickSwitchPersona = async (email, role) => {
+    setIsPersonaOpen(false);
+    try {
+      await login({
+        mode: 'email',
+        email,
+        password: 'TalentLens2026!',
+        recaptchaToken: 'recaptcha_demo_token',
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // Close menus on outside click
   useEffect(() => {
@@ -131,6 +149,61 @@ export default function Navbar() {
             <span className="text-talent-subtext font-mono text-[11px]">all-MiniLM-L6-v2 (Local)</span>
           </div>
 
+          {/* Quick Persona Switcher for Hackathon Evaluation */}
+          <div className="relative" ref={personaRef}>
+            <button
+              type="button"
+              onClick={() => setIsPersonaOpen(!isPersonaOpen)}
+              className="flex items-center gap-1.5 rounded-full border border-talent-teal/30 bg-talent-teal/10 px-2.5 py-1 text-xs font-mono font-semibold text-talent-teal hover:bg-talent-teal/20 transition-all"
+              title="Switch demo evaluation persona"
+            >
+              <Sparkles className="h-3 w-3" />
+              <span className="hidden lg:inline">Persona:</span>
+              <span>{user?.name ? user.name.split(' ')[0] : 'Demo'}</span>
+              <span className="text-[9px] text-talent-muted">▾</span>
+            </button>
+            {isPersonaOpen && (
+              <div className="absolute right-0 mt-2 w-56 rounded-xl border border-talent-border bg-talent-card p-2 shadow-card-elevated z-50 animate-revealSlide text-left">
+                <div className="px-2 py-1 text-[10px] font-mono text-talent-muted uppercase font-bold">
+                  Switch Demo Persona
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleQuickSwitchPersona('demo@talentlens.internal', 'employee')}
+                  className="w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-talent-subtext hover:bg-talent-teal/10 hover:text-talent-teal transition-colors text-left"
+                >
+                  <span className="text-base">👩‍💻</span>
+                  <div>
+                    <div className="font-bold text-talent-text">Elena Rostova</div>
+                    <div className="text-[10px] text-talent-muted">Employee (QA Lead)</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickSwitchPersona('marcus.chen@meridian.io', 'manager')}
+                  className="w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-talent-subtext hover:bg-talent-purple/10 hover:text-talent-purple transition-colors text-left"
+                >
+                  <span className="text-base">👔</span>
+                  <div>
+                    <div className="font-bold text-talent-text">Marcus Chen</div>
+                    <div className="text-[10px] text-talent-muted">Hiring Manager</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickSwitchPersona('sarah.jenkins@meridian.io', 'hr')}
+                  className="w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-talent-subtext hover:bg-talent-teal/10 hover:text-talent-teal transition-colors text-left"
+                >
+                  <span className="text-base">📊</span>
+                  <div>
+                    <div className="font-bold text-talent-text">Sarah Jenkins</div>
+                    <div className="text-[10px] text-talent-muted">HR Director</div>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* User Profile or Sign In / Register */}
           {isAuthenticated && user ? (
             <div className="relative" ref={userDropdownRef}>
@@ -166,14 +239,12 @@ export default function Navbar() {
                     <div className="text-xs font-bold text-talent-text">{user.name}</div>
                     <div className="text-[11px] text-talent-muted font-mono truncate">{user.email}</div>
                     <div className="mt-1 flex flex-wrap gap-1">
+                      <span className="rounded bg-talent-card px-1.5 py-0.2 font-mono text-[9px] text-talent-purple border border-talent-purple/30 uppercase">
+                        Role: {user.role || 'employee'}
+                      </span>
                       {user.verified?.email && (
                         <span className="rounded bg-talent-teal/15 px-1.5 py-0.2 font-mono text-[9px] text-talent-teal border border-talent-teal/30">
                           Email Verified
-                        </span>
-                      )}
-                      {user.verified?.phone && (
-                        <span className="rounded bg-talent-purple/15 px-1.5 py-0.2 font-mono text-[9px] text-talent-purple border border-talent-purple/30">
-                          SMS Verified
                         </span>
                       )}
                     </div>
@@ -186,7 +257,23 @@ export default function Navbar() {
                       className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-talent-subtext hover:bg-talent-surface hover:text-talent-text transition-colors"
                     >
                       <User className="h-3.5 w-3.5 text-talent-teal" />
-                      <span>My Candidate Telemetry</span>
+                      <span>My Candidate Dossier</span>
+                    </Link>
+                    <Link
+                      href="/inbox"
+                      onClick={() => setIsUserDropdownOpen(false)}
+                      className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-talent-subtext hover:bg-talent-surface hover:text-talent-text transition-colors"
+                    >
+                      <Eye className="h-3.5 w-3.5 text-talent-purple" />
+                      <span>Reveal Requests Inbox</span>
+                    </Link>
+                    <Link
+                      href="/privacy"
+                      onClick={() => setIsUserDropdownOpen(false)}
+                      className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-talent-subtext hover:bg-talent-surface hover:text-talent-text transition-colors"
+                    >
+                      <ShieldCheck className="h-3.5 w-3.5 text-talent-teal" />
+                      <span>Privacy & Consent</span>
                     </Link>
                     <button
                       type="button"

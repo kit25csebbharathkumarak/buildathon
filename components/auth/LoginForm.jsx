@@ -122,16 +122,80 @@ export default function LoginForm() {
     }
   };
 
-  // Quick Demo Autofill Helper
-  const handleFillDemo = () => {
+  // Quick 1-Click Persona Login
+  const handleSelectPersona = async (personaEmail, personaRole) => {
     setMode('email');
-    setEmail('demo@talentlens.internal');
+    setEmail(personaEmail);
     setPassword('TalentLens2026!');
+    setRecaptchaToken('recaptcha_demo_token');
     setError(null);
+    setLoading(true);
+
+    try {
+      await login({
+        mode: 'email',
+        email: personaEmail,
+        password: 'TalentLens2026!',
+        recaptchaToken: 'recaptcha_demo_token',
+      });
+      if (personaRole === 'manager') {
+        router.push('/match/role_distributed_systems');
+      } else if (personaRole === 'hr') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
+    } catch (err) {
+      setError(err.message || 'Demo login failed.');
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
+      {/* 1-Click Evaluation Persona Switcher */}
+      <div className="rounded-2xl border border-talent-teal/30 bg-talent-teal/5 p-3.5 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-talent-teal tracking-wide uppercase font-mono">
+            <Sparkles className="h-3 w-3 text-talent-teal animate-pulse" />
+            <span>1-Click Evaluation Personas</span>
+          </div>
+          <span className="text-[10px] text-talent-muted font-mono">Instant Auth</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleSelectPersona('demo@talentlens.internal', 'employee')}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-talent-card border border-talent-border hover:border-talent-teal/50 hover:bg-talent-teal/10 transition-all text-center group"
+          >
+            <span className="text-base">👩‍💻</span>
+            <span className="text-[11px] font-bold text-talent-text group-hover:text-talent-teal transition-colors">Elena</span>
+            <span className="text-[9px] text-talent-muted font-mono">Employee / QA</span>
+          </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleSelectPersona('marcus.chen@meridian.io', 'manager')}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-talent-card border border-talent-border hover:border-talent-purple/50 hover:bg-talent-purple/10 transition-all text-center group"
+          >
+            <span className="text-base">👔</span>
+            <span className="text-[11px] font-bold text-talent-text group-hover:text-talent-purple transition-colors">Marcus</span>
+            <span className="text-[9px] text-talent-muted font-mono">Manager / Lead</span>
+          </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleSelectPersona('sarah.jenkins@meridian.io', 'hr')}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-talent-card border border-talent-border hover:border-talent-teal/50 hover:bg-talent-teal/10 transition-all text-center group"
+          >
+            <span className="text-base">📊</span>
+            <span className="text-[11px] font-bold text-talent-text group-hover:text-talent-teal transition-colors">Sarah</span>
+            <span className="text-[9px] text-talent-muted font-mono">HR Director</span>
+          </button>
+        </div>
+      </div>
+
       {/* Tab Selector: Work Email vs Phone SMS */}
       <div className="flex rounded-xl bg-talent-surface p-1 border border-talent-border">
         <button
@@ -178,16 +242,16 @@ export default function LoginForm() {
             </h2>
             <button
               type="button"
-              onClick={handleFillDemo}
+              onClick={() => handleSelectPersona('demo@talentlens.internal', 'employee')}
               className="flex items-center gap-1 rounded bg-talent-teal/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-talent-teal border border-talent-teal/20 hover:bg-talent-teal/20 transition-colors"
               title="Click to populate demo employee credentials"
             >
               <KeyRound className="h-3 w-3" />
-              <span>Demo Fill</span>
+              <span>Autofill</span>
             </button>
           </div>
           <p className="mt-1 text-xs text-talent-muted">
-            Access your verified candidate telemetry and career progression paths.
+            Access verified candidate telemetry, blind matching, and mobility engines.
           </p>
         </div>
 

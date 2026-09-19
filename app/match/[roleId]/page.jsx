@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllEmployees, getAllRoles, getRoleById } from '../../../lib/db/queries';
-import PitchCard from '../../../components/PitchCard';
+import BlindMatchWorkspace from '../../../components/BlindMatchWorkspace';
+import { toBlindProfile } from '../../../lib/ai/blind-profile';
 import { embed } from '../../../lib/ai/embeddings';
 import { scoreMatch } from '../../../lib/ai/score-match';
 import { generatePitch } from '../../../lib/ai/generate-pitch';
@@ -36,11 +37,8 @@ function getSkillName(skill) {
 
 /**
  * Blind Matching Pool page evaluating candidates under zero-bias criteria and displaying PitchCards.
- * Personal identity fields are strictly excluded from the server payload to eliminate client-side leaks.
+ * Personal identity fields are strictly excluded from the server payload using toBlindProfile().
  * All candidate and role data is queried directly from SQLite database.
- * @param {Object} props - Page properties.
- * @param {{roleId: string}} props.params - Dynamic route parameters.
- * @returns {Promise<JSX.Element>}
  */
 export default async function MatchPage({ params }) {
   const roles = getAllRoles();
@@ -100,13 +98,15 @@ export default async function MatchPage({ params }) {
         },
       });
 
-      // CRITICAL: Strictly exclude emp.hidden to prevent blind matching data leak
-      return {
-        id: emp.id,
+      // Transform strictly into allow-listed blind profile
+      return toBlindProfile({
+        ...emp,
+        match_score: scoreData.score,
         score: scoreData.score,
+        score_breakdown: scoreData.breakdown,
         breakdown: scoreData.breakdown,
         pitch,
-      };
+      });
     })
   );
 
@@ -206,27 +206,12 @@ export default async function MatchPage({ params }) {
         </div>
       </div>
 
-      {/* Grid of Anonymized Pitch Cards */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-talent-text font-mono uppercase tracking-wide">
-            Ranked Candidate Pool ({scoredCandidates.length} Evaluated)
-          </h2>
-          <span className="text-xs text-talent-muted font-mono">
-            Sorted by Weighted Fit Score
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {scoredCandidates.map((candidate) => (
-            <PitchCard
-              key={candidate.id}
-              candidate={candidate}
-              roleId={role.id}
-            />
-          ))}
-        </div>
-      </div>
+      {/* Interactive Blind Match Workspace (Filters, Side-by-Side Compare, Export Shortlist) */}
+      <BlindMatchWorkspace
+        initialCandidates={scoredCandidates}
+        role={role}
+        roles={roles}
+      />
     </div>
   );
 }

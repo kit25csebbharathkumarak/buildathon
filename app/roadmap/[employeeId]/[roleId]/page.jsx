@@ -39,6 +39,10 @@ export default async function RoadmapPage({ params }) {
     role_requirements: roleRequirements,
   });
 
+  // Query saved progress for candidate on this role
+  const { getRoadmapProgress } = await import('../../../../lib/db/queries');
+  const initialCompletedNodes = getRoadmapProgress(employee.id, role.id);
+
   return (
     <div className="space-y-8 pb-16">
       {/* Top Header & Breadcrumbs */}
@@ -115,6 +119,9 @@ export default async function RoadmapPage({ params }) {
         nodes={roadmapData.nodes}
         edges={roadmapData.edges}
         targetRole={role.title}
+        candidateId={employee.id}
+        roleId={role.id}
+        initialCompletedNodeIds={initialCompletedNodes}
       />
 
       {/* Structured Competency Gap & Transition Plan */}
