@@ -1,0 +1,28 @@
+{
+  "name": "talentlens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TalentLens — AI-Powered Internal Talent Discovery and Mobility Platform by 4D Developers",
+  "scripts": {
+    "dev": "node server/index.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server/index.js",
+    "test": "node --test tests/score-match.test.mjs tests/embeddings.test.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.1",
+    "@xenova/transformers": "^2.17.2",
+    "express": "^4.21.1",
+    "lucide-react": "^0.453.0",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "socket.io": "^4.8.0",
+    "socket.io-client": "^4.8.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14"
+  }
+}
