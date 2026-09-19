@@ -1,0 +1,289 @@
+[
+  {
+    "id": "emp-101",
+    "hidden": {
+      "name": "Alex Chen",
+      "title": "Senior Backend Engineer",
+      "age": 31
+    },
+    "raw_logs": [
+      {
+        "type": "INCIDENT_POSTMORTEM",
+        "text": "Authored postmortem for SEV-1 outage during database shard rebalancing. Identified raft consensus split-brain condition in custom raft lease coordinator, mitigated by implementing atomic epoch ticketing and automated quorum re-election with zero data loss across 12,000 requests/sec."
+      },
+      {
+        "type": "PR_REVIEW",
+        "text": "Reviewed PR #1429 on Kafka consumer group rebalancing: flagged memory leak in buffer pool allocation during rebalance callbacks and recommended ring-buffer zero-copy serialization with backpressure throttling."
+      },
+      {
+        "type": "ARCHITECTURE_NOTE",
+        "text": "Proposed zero-downtime migration strategy from Postgres 13 to CockroachDB across 4 global regions, utilizing dual-write CDC streams and shadow verification pipelines."
+      },
+      {
+        "type": "SLACK_THREAD",
+        "text": "Assisted data engineering team in debugging distributed deadlock issues in Spark streaming jobs, providing tuned partition hash keys and spill-to-disk thresholds."
+      }
+    ],
+    "explicit_skills": [
+      "Node.js",
+      "PostgreSQL",
+      "Docker",
+      "REST APIs",
+      "TypeScript"
+    ],
+    "inferred_skills": [
+      "Distributed Consensus (Raft)",
+      "High-Throughput Stream Processing",
+      "Chaos Engineering & Fault Tolerance",
+      "Multi-Region Database Replication"
+    ],
+    "recency_score": 0.95,
+    "learning_velocity": 0.88
+  },
+  {
+    "id": "emp-102",
+    "hidden": {
+      "name": "Samantha Wright",
+      "title": "Full Stack Developer",
+      "age": 28
+    },
+    "raw_logs": [
+      {
+        "type": "DESIGN_DOC",
+        "text": "Engineered micro-frontend isolation container using module federation and Web Workers. Reduced bundle parse times on low-end mobile devices by 42% through eager prefetching and off-thread DOM hydration."
+      },
+      {
+        "type": "PR_REVIEW",
+        "text": "Audited accessibility and screen reader compatibility on dynamic charts in the executive reporting suite, authoring ARIA live region wrappers and keyboard navigation traps."
+      },
+      {
+        "type": "INCIDENT_POSTMORTEM",
+        "text": "Resolved client-side state thrashing during flash sale traffic burst by implementing optimistic UI rollbacks and WebAssembly-based local state reconciler."
+      },
+      {
+        "type": "STANDUP_UPDATE",
+        "text": "Completed benchmark of Canvas vs SVG for rendering 100,000 telemetry nodes in real-time, opting for hybrid WebGL pipeline with WebGPU fallback."
+      }
+    ],
+    "explicit_skills": [
+      "React",
+      "JavaScript",
+      "CSS3",
+      "HTML5",
+      "Git"
+    ],
+    "inferred_skills": [
+      "WebAssembly Systems Integration",
+      "High-Performance WebGL/WebGPU Rendering",
+      "Micro-Frontend Architecture",
+      "Client-Side State Reconciliation"
+    ],
+    "recency_score": 0.91,
+    "learning_velocity": 0.94
+  },
+  {
+    "id": "emp-103",
+    "hidden": {
+      "name": "Marcus Vance",
+      "title": "Systems Reliability Engineer",
+      "age": 35
+    },
+    "raw_logs": [
+      {
+        "type": "ARCHITECTURE_NOTE",
+        "text": "Designed declarative Kubernetes operator in Go to manage ephemeral multi-tenant test clusters. Automates resource cgroup throttling, egress mTLS enforcement, and cost allocation tags."
+      },
+      {
+        "type": "INCIDENT_POSTMORTEM",
+        "text": "Coordinated SEV-0 emergency failover when primary AWS zone degraded. Successfully drained and shifted 85,000 concurrent websocket connections to secondary region in under 90 seconds without dropping state."
+      },
+      {
+        "type": "DESIGN_DOC",
+        "text": "Drafted enterprise FinOps policy and autoscaling heuristics based on spot instance eviction risk scores, cutting cloud compute spend by $18,000 monthly."
+      },
+      {
+        "type": "PR_REVIEW",
+        "text": "Reviewed Terraform modules for Istio service mesh rollout, enforcing strict mutual TLS and circuit-breaker telemetry collection."
+      }
+    ],
+    "explicit_skills": [
+      "Linux",
+      "Bash",
+      "Kubernetes",
+      "AWS",
+      "Monitoring (Datadog)"
+    ],
+    "inferred_skills": [
+      "Cloud FinOps & Cost Engineering",
+      "Automated Disaster Recovery & Failover",
+      "Custom Kubernetes Controller Development",
+      "Zero-Trust Service Mesh Security"
+    ],
+    "recency_score": 0.89,
+    "learning_velocity": 0.82
+  },
+  {
+    "id": "emp-104",
+    "hidden": {
+      "name": "Elena Rostova",
+      "title": "Data Analyst",
+      "age": 29
+    },
+    "raw_logs": [
+      {
+        "type": "DESIGN_DOC",
+        "text": "Constructed end-to-end dbt modeling layer and Snowflake dimensional data mart for customer churn prediction, incorporating feature store embeddings and dynamic cohort segmentations."
+      },
+      {
+        "type": "ARCHITECTURE_NOTE",
+        "text": "Prototyped LLM agent tool calling pipeline using LangChain to allow non-technical business partners to query warehouse analytics using natural language."
+      },
+      {
+        "type": "SLACK_THREAD",
+        "text": "Identified metric drift in monthly recurring revenue calculations caused by conflicting timezone normalization between Stripe webhooks and Salesforce syncs; built automated reconciliation validator."
+      },
+      {
+        "type": "STANDUP_UPDATE",
+        "text": "Optimized Snowflake warehouse sizing and clustering keys on 2.4-billion-row clickstream table, dropping query p95 latency from 44s to 1.8s."
+      }
+    ],
+    "explicit_skills": [
+      "SQL",
+      "Python",
+      "Tableau",
+      "Excel",
+      "dbt"
+    ],
+    "inferred_skills": [
+      "LLM Tool-Calling & Semantic Query Synthesis",
+      "Large-Scale Dimensional Modeling",
+      "Financial Data Reconciliation",
+      "Query Performance Tuning (VLDB)"
+    ],
+    "recency_score": 0.97,
+    "learning_velocity": 0.96
+  },
+  {
+    "id": "emp-105",
+    "hidden": {
+      "name": "Devon Kim",
+      "title": "Security Analyst",
+      "age": 33
+    },
+    "raw_logs": [
+      {
+        "type": "INCIDENT_POSTMORTEM",
+        "text": "Discovered and patched prototype pollution vulnerability in third-party npm dependency within core auth gateway. Authored custom Semgrep SAST rule to prevent regression across all 48 company repositories."
+      },
+      {
+        "type": "ARCHITECTURE_NOTE",
+        "text": "Spearheaded OAuth 2.1 and Passkey (WebAuthn) passwordless authentication roadmap across enterprise mobile and web client apps, including FIDO2 hardware token fallback."
+      },
+      {
+        "type": "PR_REVIEW",
+        "text": "Performed threat modeling review on public developer API webhook signing mechanism; mandated HMAC-SHA256 timestamped signatures with replay attack protection."
+      },
+      {
+        "type": "DESIGN_DOC",
+        "text": "Developed automated secret scanning bot integrated into CI/CD pipelines that quarantines leaked credentials and rotates affected AWS IAM keys automatically within 3 minutes."
+      }
+    ],
+    "explicit_skills": [
+      "Cybersecurity",
+      "OWASP Top 10",
+      "SIEM Tools",
+      "Network Protocols",
+      "Vulnerability Scanning"
+    ],
+    "inferred_skills": [
+      "Static Code Analysis (SAST) Rule Authoring",
+      "Cryptographic Key Management & FIDO2",
+      "Automated Incident Remediation Bots",
+      "Threat Modeling & Secure Architecture"
+    ],
+    "recency_score": 0.93,
+    "learning_velocity": 0.85
+  },
+  {
+    "id": "emp-106",
+    "hidden": {
+      "name": "Priya Patel",
+      "title": "Junior ML Engineer",
+      "age": 26
+    },
+    "raw_logs": [
+      {
+        "type": "ARCHITECTURE_NOTE",
+        "text": "Built vector search retrieval pipeline combining HNSW indexing in Qdrant with cross-encoder reranking. Evaluated reciprocal rank fusion (RRF) on internal wiki documents with a 24% boost in Mean Reciprocal Rank."
+      },
+      {
+        "type": "STANDUP_UPDATE",
+        "text": "Quantized Llama-3-8B model down to 4-bit AWQ and deployed onto single NVIDIA T4 GPU instance using vLLM, reducing cold start latency by 65% while maintaining benchmark perplexity."
+      },
+      {
+        "type": "PR_REVIEW",
+        "text": "Reviewed PyTorch training harness for custom BERT classification model: corrected mixed-precision gradient scaling and added tensorboard memory profiling."
+      },
+      {
+        "type": "DESIGN_DOC",
+        "text": "Designed synthetic dataset generation pipeline with structured guidance (Outlines / JSON schema validation) to fine-tune compact specialist models."
+      }
+    ],
+    "explicit_skills": [
+      "Python",
+      "PyTorch",
+      "Pandas",
+      "Scikit-Learn",
+      "Git"
+    ],
+    "inferred_skills": [
+      "Model Quantization & vLLM Serving",
+      "Advanced RAG & Reciprocal Rank Fusion",
+      "Vector Database Architecture (HNSW)",
+      "Synthetic Data Generation Pipelines"
+    ],
+    "recency_score": 0.98,
+    "learning_velocity": 0.97
+  },
+  {
+    "id": "emp-107",
+    "hidden": {
+      "name": "Jordan Morales",
+      "title": "Backend Developer",
+      "age": 30
+    },
+    "raw_logs": [
+      {
+        "type": "PR_REVIEW",
+        "text": "Reviewed GraphQL gateway schema federation: resolved N+1 subquery amplification by introducing DataLoader batching and persisted query hashing."
+      },
+      {
+        "type": "INCIDENT_POSTMORTEM",
+        "text": "Led debugging of socket connection leakage during peak websocket surge. Refactored event listener teardown hooks in cluster mode and configured TCP keep-alive timeouts."
+      },
+      {
+        "type": "DESIGN_DOC",
+        "text": "Engineered idempotent payment webhook processing system using Redis distributed locks and transactional outbox pattern to guarantee exactly-once execution."
+      },
+      {
+        "type": "STANDUP_UPDATE",
+        "text": "Migrated legacy callback-heavy notification dispatcher to event-driven BullMQ queue with exponential backoff and dead-letter queue metrics."
+      }
+    ],
+    "explicit_skills": [
+      "Node.js",
+      "Express",
+      "Redis",
+      "MongoDB",
+      "Docker"
+    ],
+    "inferred_skills": [
+      "GraphQL Federation & DataLoader Optimization",
+      "Transactional Outbox & Exactly-Once Systems",
+      "Distributed Task Queues & Dead-Letter Handling",
+      "Real-Time WebSocket Connection Scaling"
+    ],
+    "recency_score": 0.92,
+    "learning_velocity": 0.89
+  }
+]

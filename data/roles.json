@@ -1,0 +1,86 @@
+[
+  {
+    "id": "role-dist-arch",
+    "title": "Staff Distributed Systems Architect",
+    "department": "Platform Core",
+    "description": "Lead high-availability distributed architecture, raft consensus clusters, multi-region replication, and resilience against cascading faults across our microservice infrastructure.",
+    "required_skills": [
+      "Distributed Consensus (Raft)",
+      "Multi-Region Database Replication",
+      "Chaos Engineering & Fault Tolerance",
+      "High-Throughput Stream Processing",
+      "TypeScript",
+      "PostgreSQL"
+    ]
+  },
+  {
+    "id": "role-ai-infra",
+    "title": "Senior AI Infrastructure Engineer",
+    "department": "Applied Machine Learning",
+    "description": "Architect scalable inference serving engines, vector search pipelines, quantization harnesses, and retrieval-augmented generation systems for enterprise LLM workloads.",
+    "required_skills": [
+      "Model Quantization & vLLM Serving",
+      "Vector Database Architecture (HNSW)",
+      "Advanced RAG & Reciprocal Rank Fusion",
+      "PyTorch",
+      "Python",
+      "Docker"
+    ]
+  },
+  {
+    "id": "role-fe-perf",
+    "title": "Lead Frontend Systems Architect",
+    "department": "Client Experience",
+    "description": "Drive client performance, micro-frontend federation, WebAssembly computing modules, and low-latency interactive visualization canvases.",
+    "required_skills": [
+      "Micro-Frontend Architecture",
+      "High-Performance WebGL/WebGPU Rendering",
+      "WebAssembly Systems Integration",
+      "Client-Side State Reconciliation",
+      "React",
+      "TypeScript"
+    ]
+  },
+  {
+    "id": "role-sec-lead",
+    "title": "Principal Application Security Engineer",
+    "department": "Information Security",
+    "description": "Champion proactive threat modeling, automated SAST/DAST rule authoring, zero-trust authentication protocols, and automated security incident containment bots.",
+    "required_skills": [
+      "Threat Modeling & Secure Architecture",
+      "Static Code Analysis (SAST) Rule Authoring",
+      "Cryptographic Key Management & FIDO2",
+      "Automated Incident Remediation Bots",
+      "Cybersecurity",
+      "OWASP Top 10"
+    ]
+  },
+  {
+    "id": "role-data-lead",
+    "title": "Staff Analytics & Semantic Engineer",
+    "department": "Data & Insights",
+    "description": "Bridge data warehousing with AI-driven analytics, designing high-scale dimensional models, semantic translation pipelines, and VLDB query optimizations.",
+    "required_skills": [
+      "Large-Scale Dimensional Modeling",
+      "LLM Tool-Calling & Semantic Query Synthesis",
+      "Query Performance Tuning (VLDB)",
+      "Financial Data Reconciliation",
+      "SQL",
+      "Python"
+    ]
+  },
+  {
+    "id": "role-event-backend",
+    "title": "Senior Real-Time Systems Engineer",
+    "department": "Platform Services",
+    "description": "Scale real-time transactional platforms, distributed lock managers, event streaming queues, and high-concurrency WebSocket connection fabrics.",
+    "required_skills": [
+      "Real-Time WebSocket Connection Scaling",
+      "Transactional Outbox & Exactly-Once Systems",
+      "Distributed Task Queues & Dead-Letter Handling",
+      "GraphQL Federation & DataLoader Optimization",
+      "Node.js",
+      "Redis"
+    ]
+  }
+]
