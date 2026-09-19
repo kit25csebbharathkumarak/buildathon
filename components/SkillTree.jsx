@@ -78,6 +78,7 @@ export default function SkillTree({ nodes = [], edges = [], targetRole = 'Target
           d,
           isAcquiredEdge,
           isInProgressEdge,
+          fromCol: source.colIdx ?? 0,
           fromStatus: source.status,
           toStatus: target.status,
         };
@@ -154,85 +155,116 @@ export default function SkillTree({ nodes = [], edges = [], targetRole = 'Target
         </div>
       </div>
 
-      {/* Graph Canvas */}
-      <div className="overflow-x-auto p-4 scrollbar-thin">
-        <div
-          className="relative min-h-[460px]"
-          style={{ width: `${layout.width}px`, height: `${layout.height}px` }}
-        >
-          {/* Subtle grid pattern background */}
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: 'radial-gradient(#7F77DD 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
-            }}
-          />
+      {/* Mobile Touch Exploration Hint */}
+      <div className="flex md:hidden items-center justify-between px-4 py-2 border-b border-talent-border/50 bg-talent-surface/50 text-[11px] font-mono text-talent-muted">
+        <span className="flex items-center gap-1.5">
+          <Sparkles className="h-3 w-3 text-talent-teal" />
+          Interactive Roadmap
+        </span>
+        <span className="flex items-center gap-1 text-talent-teal animate-pulse">
+          Scroll to explore <ArrowRight className="h-3 w-3" />
+        </span>
+      </div>
 
-          {/* SVG Connector Lines */}
-          <svg
-            className="pointer-events-none absolute inset-0 h-full w-full"
-            style={{ width: layout.width, height: layout.height }}
+      {/* Graph Canvas Container with Horizontal Scroll & Trailing Gradient Hint */}
+      <div className="relative w-full overflow-hidden">
+        {/* Trailing edge gradient overlay for scroll hint */}
+        <div
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-talent-bg to-transparent z-10"
+          aria-hidden="true"
+        />
+
+        <div className="overflow-x-auto p-4 scrollbar-thin overscroll-x-contain">
+          <div
+            className="relative min-h-[460px]"
+            style={{ width: `${layout.width}px`, height: `${layout.height}px` }}
           >
-            <defs>
-              <linearGradient id="tealToPurple" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#1D9E75" />
-                <stop offset="100%" stopColor="#7F77DD" />
-              </linearGradient>
-              <linearGradient id="purpleToAmber" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#7F77DD" />
-                <stop offset="100%" stopColor="#F59E0B" />
-              </linearGradient>
-            </defs>
-            {layout.computedEdges.map((edge) => {
-              const strokeColor = edge.isAcquiredEdge
-                ? '#1D9E75'
-                : edge.isInProgressEdge
-                ? 'url(#tealToPurple)'
-                : '#4A5568';
+            {/* Subtle grid pattern background */}
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: 'radial-gradient(#7F77DD 1px, transparent 1px)',
+                backgroundSize: '24px 24px',
+              }}
+            />
+
+            {/* SVG Connector Lines */}
+            <svg
+              className="pointer-events-none absolute inset-0 h-full w-full"
+              style={{ width: layout.width, height: layout.height }}
+            >
+              <defs>
+                <linearGradient id="tealToPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#1D9E75" />
+                  <stop offset="100%" stopColor="#7F77DD" />
+                </linearGradient>
+                <linearGradient id="purpleToAmber" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#7F77DD" />
+                  <stop offset="100%" stopColor="#F59E0B" />
+                </linearGradient>
+              </defs>
+              {layout.computedEdges.map((edge) => {
+                const strokeColor = edge.isAcquiredEdge
+                  ? '#1D9E75'
+                  : edge.isInProgressEdge
+                  ? 'url(#tealToPurple)'
+                  : '#4A5568';
+
+                const edgeDelay = Math.max(180, (edge.fromCol + 1) * 160);
+
+                return (
+                  <g key={edge.id}>
+                    {/* Glowing background path with draw-in animation */}
+                    <path
+                      d={edge.d}
+                      fill="none"
+                      stroke={strokeColor}
+                      strokeWidth={edge.isAcquiredEdge ? 3 : 2}
+                      strokeOpacity={0.85}
+                      className="animate-edge"
+                      style={{
+                        strokeDasharray: edge.isAcquiredEdge ? 800 : '6 4',
+                        animationDelay: `${edgeDelay}ms`,
+                      }}
+                    />
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Absolute Positioned Nodes with Staggered Entrance Animation */}
+            {layout.positionedNodes.map((node) => {
+              const styling = getStatusBadge(node.status);
+              const nodeDelay = (node.colIdx || 0) * 150 + 50;
 
               return (
-                <g key={edge.id}>
-                  {/* Glowing background path */}
-                  <path
-                    d={edge.d}
-                    fill="none"
-                    stroke={strokeColor}
-                    strokeWidth={edge.isAcquiredEdge ? 3 : 2}
-                    strokeOpacity={0.8}
-                    strokeDasharray={edge.isAcquiredEdge ? 'none' : '4,4'}
-                  />
-                </g>
+                <div
+                  key={node.id}
+                  tabIndex={0}
+                  role="article"
+                  aria-label={`${styling.label}: ${node.label}`}
+                  className={`absolute flex flex-col justify-between rounded-xl border p-3 transition-all duration-200 ${styling.border} ${styling.bg} ${styling.shadow} hover:scale-105 cursor-pointer backdrop-blur-sm animate-node focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal`}
+                  style={{
+                    left: `${node.x}px`,
+                    top: `${node.y}px`,
+                    width: `${node.width}px`,
+                    height: `${node.height}px`,
+                    animationDelay: `${nodeDelay}ms`,
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-1">
+                    <span className={`rounded px-1.5 py-0.5 text-[9px] font-mono uppercase font-bold border ${styling.badgeClass}`}>
+                      {styling.label}
+                    </span>
+                    {styling.icon}
+                  </div>
+                  <div className="font-sans text-xs font-bold text-talent-text line-clamp-2 leading-tight">
+                    {node.label}
+                  </div>
+                </div>
               );
             })}
-          </svg>
-
-          {/* Absolute Positioned Nodes */}
-          {layout.positionedNodes.map((node) => {
-            const styling = getStatusBadge(node.status);
-            return (
-              <div
-                key={node.id}
-                className={`absolute flex flex-col justify-between rounded-xl border p-3 transition-all duration-200 ${styling.border} ${styling.bg} ${styling.shadow} hover:scale-105 cursor-pointer backdrop-blur-sm`}
-                style={{
-                  left: `${node.x}px`,
-                  top: `${node.y}px`,
-                  width: `${node.width}px`,
-                  height: `${node.height}px`,
-                }}
-              >
-                <div className="flex items-start justify-between gap-1">
-                  <span className={`rounded px-1.5 py-0.5 text-[9px] font-mono uppercase font-bold border ${styling.badgeClass}`}>
-                    {styling.label}
-                  </span>
-                  {styling.icon}
-                </div>
-                <div className="font-sans text-xs font-bold text-talent-text line-clamp-2 leading-tight">
-                  {node.label}
-                </div>
-              </div>
-            );
-          })}
+          </div>
         </div>
       </div>
     </div>

@@ -115,7 +115,7 @@ export default async function MatchPage({ params }) {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 font-mono text-xs text-talent-muted hover:text-talent-teal transition-colors"
+          className="inline-flex items-center gap-2 font-mono text-xs text-talent-muted hover:text-talent-teal transition-colors rounded px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to Talent Directory</span>
@@ -129,7 +129,7 @@ export default async function MatchPage({ params }) {
               <Link
                 key={r.id}
                 href={`/match/${r.id}`}
-                className={`rounded px-2.5 py-1 text-xs font-mono transition-colors ${
+                className={`rounded px-2.5 py-1 text-xs font-mono transition-all hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal ${
                   r.id === role.id
                     ? 'bg-talent-teal text-talent-bg font-bold shadow-glow-teal'
                     : 'bg-talent-card text-talent-subtext hover:bg-talent-surface border border-talent-border'

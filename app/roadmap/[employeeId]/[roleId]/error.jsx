@@ -39,7 +39,7 @@ export default function RoadmapError({ error, reset }) {
       <div className="mt-6 flex items-center gap-3">
         <button
           onClick={() => reset()}
-          className="flex items-center gap-2 rounded-lg bg-talent-purple px-4 py-2 text-xs font-semibold text-talent-bg shadow-glow-purple hover:opacity-90 transition-all"
+          className="flex items-center gap-2 rounded-lg bg-talent-purple px-4 py-2 text-xs font-semibold text-talent-bg shadow-glow-purple hover:opacity-90 transition-all hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-purple"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           <span>Try Again</span>
@@ -47,10 +47,10 @@ export default function RoadmapError({ error, reset }) {
 
         <Link
           href="/"
-          className="flex items-center gap-1.5 rounded-lg border border-talent-border bg-talent-surface px-4 py-2 text-xs font-semibold text-talent-subtext hover:text-talent-text transition-colors"
+          className="flex items-center gap-1.5 rounded-lg border border-talent-border bg-talent-surface px-4 py-2 text-xs font-semibold text-talent-subtext hover:text-talent-text transition-colors hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Talent Directory</span>
+          <span>Back to Dashboard</span>
         </Link>
       </div>
     </div>

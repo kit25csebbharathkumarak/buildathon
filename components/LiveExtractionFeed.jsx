@@ -128,7 +128,8 @@ export default function LiveExtractionFeed({ employeeId, rawLogs = [] }) {
           <button
             onClick={handleClearFeed}
             disabled={events.length === 0}
-            className="rounded p-1 text-talent-muted hover:bg-talent-card hover:text-talent-text disabled:opacity-30 transition-colors"
+            aria-label="Clear live telemetry feed"
+            className="rounded p-1.5 text-talent-muted hover:bg-talent-card hover:text-talent-text disabled:opacity-30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal"
             title="Clear Feed"
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -136,7 +137,8 @@ export default function LiveExtractionFeed({ employeeId, rawLogs = [] }) {
           <button
             onClick={handleStartScan}
             disabled={isScanning}
-            className="flex items-center gap-1.5 rounded-md bg-talent-teal px-3 py-1 font-mono text-xs font-semibold text-talent-bg shadow-glow-teal hover:bg-talent-teal-light disabled:opacity-50 transition-all"
+            aria-label={isScanning ? 'Running skill detective scan on telemetry logs' : 'Run skill detective scan on telemetry logs'}
+            className="flex items-center gap-1.5 rounded-md bg-talent-teal px-3 py-1.5 font-mono text-xs font-semibold text-talent-bg shadow-glow-teal hover:bg-talent-teal-light disabled:opacity-50 transition-all hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal"
           >
             {isScanning ? (
               <>

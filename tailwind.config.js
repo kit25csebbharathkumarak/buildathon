@@ -20,7 +20,7 @@ module.exports = {
         'talent-teal-light': '#2AD19B',
         'talent-purple': '#7F77DD',
         'talent-purple-light': '#9D96F7',
-        'talent-muted': '#8895A7',
+        'talent-muted': '#94A3B8',
         'talent-text': '#F1F4F9',
         'talent-subtext': '#A1ADC1',
       },

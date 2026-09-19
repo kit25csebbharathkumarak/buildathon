@@ -38,7 +38,7 @@ export default function EmployeePage({ params }) {
       <div className="flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 font-mono text-xs text-talent-muted hover:text-talent-teal transition-colors"
+          className="inline-flex items-center gap-2 font-mono text-xs text-talent-muted hover:text-talent-teal transition-colors rounded px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to Directory</span>
@@ -46,14 +46,14 @@ export default function EmployeePage({ params }) {
         <div className="flex items-center gap-2">
           <Link
             href={`/roadmap/${employee.id}/${defaultRole}`}
-            className="flex items-center gap-1.5 rounded-lg border border-talent-purple/40 bg-talent-purple/10 px-3 py-1.5 text-xs font-semibold text-talent-purple hover:bg-talent-purple hover:text-talent-bg transition-colors"
+            className="flex items-center gap-1.5 rounded-lg border border-talent-purple/40 bg-talent-purple/10 px-3 py-1.5 text-xs font-semibold text-talent-purple hover:bg-talent-purple hover:text-talent-bg transition-colors hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-purple"
           >
             <Compass className="h-3.5 w-3.5" />
             <span>Launch Career GPS</span>
           </Link>
           <Link
             href={`/match/${defaultRole}`}
-            className="flex items-center gap-1.5 rounded-lg border border-talent-teal/40 bg-talent-teal/10 px-3 py-1.5 text-xs font-semibold text-talent-teal hover:bg-talent-teal hover:text-talent-bg transition-colors"
+            className="flex items-center gap-1.5 rounded-lg border border-talent-teal/40 bg-talent-teal/10 px-3 py-1.5 text-xs font-semibold text-talent-teal hover:bg-talent-teal hover:text-talent-bg transition-colors hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal"
           >
             <ShieldCheck className="h-3.5 w-3.5" />
             <span>Blind Match Pool</span>
@@ -114,24 +114,32 @@ export default function EmployeePage({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Skills & Raw Telemetry */}
         <div className="lg:col-span-6 space-y-6">
-          {/* Inferred Skills Card */}
-          <div className="rounded-xl border border-talent-border bg-talent-card p-6 shadow-card-elevated">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-4 w-4 text-talent-teal" />
-              <h2 className="text-sm font-bold font-mono tracking-wide text-talent-text uppercase">
-                AI-Inferred Latent Skills ({employee.inferred_skills?.length || 0})
-              </h2>
+          {/* Inferred Skills Card - Elevated Prominence ("AI Found This" Moment) */}
+          <div className="relative overflow-hidden rounded-xl border-2 border-talent-teal/60 bg-gradient-to-br from-talent-teal/15 via-talent-card to-talent-card p-6 shadow-glow-teal hover-lift">
+            <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-talent-teal/10 blur-2xl" />
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-talent-teal/20 text-talent-teal border border-talent-teal/30">
+                  <Sparkles className="h-4 w-4 text-talent-teal" />
+                </div>
+                <h2 className="text-sm font-bold font-mono tracking-wide text-talent-text uppercase">
+                  AI-Inferred Latent Skills ({employee.inferred_skills?.length || 0})
+                </h2>
+              </div>
+              <span className="rounded-full bg-talent-teal/20 px-2.5 py-0.5 text-[10px] font-mono font-bold text-talent-teal border border-talent-teal/40 uppercase tracking-wider">
+                AI Uncovered
+              </span>
             </div>
-            <p className="text-xs text-talent-muted mb-4">
-              Uncovered by analyzing unstructured telemetry (postmortems, PR reviews, RFCs)
+            <p className="text-xs text-talent-muted mb-4 leading-relaxed">
+              Uncovered by NLP extraction from unstructured telemetry (postmortems, PR reviews, RFCs) — invisible in standard resumes.
             </p>
             <div className="flex flex-wrap gap-2">
               {employee.inferred_skills?.map((skill, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-1.5 rounded-lg border border-talent-teal/40 bg-talent-teal/10 px-3 py-1.5 text-xs font-semibold text-talent-teal shadow-glow-teal"
+                  className="flex items-center gap-1.5 rounded-lg border border-talent-teal/50 bg-talent-teal/20 px-3 py-1.5 text-xs font-semibold text-talent-teal shadow-glow-teal hover:bg-talent-teal/30 transition-colors"
                 >
-                  <span>✨</span>
+                  <span className="text-[11px]">✨</span>
                   <span>{getSkillName(skill)}</span>
                 </div>
               ))}

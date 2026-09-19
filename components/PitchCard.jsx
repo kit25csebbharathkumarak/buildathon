@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Eye, EyeOff, ShieldCheck, Zap, Activity, Award, ArrowUpRight, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, ArrowUpRight, Loader2 } from 'lucide-react';
 
 /**
- * Renders an anonymized candidate pitch card with pure weighted telemetry breakdown and a secure on-demand identity reveal toggle.
+ * Renders an anonymized candidate pitch card with pure weighted telemetry breakdown, animated reveal transition, and tactile hover lift.
  * @param {Object} props - Component properties.
  * @param {Object} props.candidate - Candidate data with ID, scores, breakdown, and pitch (strictly zero pre-loaded identity fields).
  * @param {string} props.roleId - Associated role ID.
@@ -57,38 +57,38 @@ export default function PitchCard({ candidate, roleId }) {
   };
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-talent-border bg-talent-card p-6 shadow-card-elevated hover:border-talent-border-highlight transition-all duration-300">
-      {/* Top Header: Anonymized Identity & Score Gauge */}
+    <div className="group flex flex-col justify-between rounded-xl border border-talent-border bg-talent-card p-5 sm:p-6 shadow-card-elevated hover:border-talent-border-highlight hover-lift transition-all duration-200">
+      {/* Top Header: Responsive Layout to Avoid Crowding */}
       <div>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
+        <div className="flex items-start justify-between gap-3 sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="rounded bg-talent-surface px-2 py-0.5 font-mono text-xs text-talent-muted border border-talent-border">
                 {candidate.id}
               </span>
-              <span className="flex items-center gap-1 rounded bg-talent-teal/10 px-2 py-0.5 text-[11px] font-medium text-talent-teal border border-talent-teal/20">
-                <ShieldCheck className="h-3 w-3" />
-                Blind Profile
+              <span className="inline-flex items-center gap-1 rounded bg-talent-teal/10 px-2 py-0.5 text-[11px] font-medium text-talent-teal border border-talent-teal/20">
+                <ShieldCheck className="h-3 w-3 flex-shrink-0" />
+                <span>Blind Profile</span>
               </span>
             </div>
 
-            {/* Revealed Identity or Anonymized Headline */}
-            <div className="mt-3">
+            {/* Smooth Animated Reveal Container (Crossfade / Slide) */}
+            <div className="mt-3 min-h-[44px] flex flex-col justify-center overflow-hidden">
               {isRevealed && identity ? (
-                <div className="animate-fadeIn">
-                  <h3 className="text-lg font-bold text-talent-text">
+                <div key="revealed" className="animate-revealSlide">
+                  <h3 className="text-base sm:text-lg font-bold text-talent-text truncate">
                     {identity.name}
                   </h3>
-                  <p className="text-xs text-talent-teal font-medium">
+                  <p className="text-xs text-talent-teal font-medium truncate">
                     {identity.title} • {identity.age} yrs old
                   </p>
                 </div>
               ) : (
-                <div>
-                  <h3 className="text-lg font-bold text-talent-text">
+                <div key="anonymized" className="animate-fadeIn">
+                  <h3 className="text-base sm:text-lg font-bold text-talent-text">
                     Candidate Profile <span className="font-mono text-talent-subtext">#{candidate.id.replace('emp-', '')}</span>
                   </h3>
-                  <p className="text-xs text-talent-muted">
+                  <p className="text-xs text-talent-muted truncate">
                     Identity concealed to eliminate unconscious bias
                   </p>
                 </div>
@@ -96,10 +96,10 @@ export default function PitchCard({ candidate, roleId }) {
             </div>
           </div>
 
-          {/* Overall Score Badge */}
-          <div className="flex flex-col items-end">
+          {/* Overall Score Badge: Preserved Minimum Width */}
+          <div className="flex flex-col items-end flex-shrink-0 pl-2">
             <div className="flex items-baseline gap-0.5">
-              <span className="text-2xl font-black tracking-tight text-talent-teal font-mono">
+              <span className="text-2xl sm:text-3xl font-black tracking-tight text-talent-teal font-mono">
                 {score}
               </span>
               <span className="text-xs font-bold text-talent-muted">%</span>
@@ -111,7 +111,7 @@ export default function PitchCard({ candidate, roleId }) {
         </div>
 
         {/* 3-Sentence Anonymized Pitch */}
-        <div className="mt-4 rounded-lg bg-talent-surface/80 p-4 border-l-2 border-talent-purple">
+        <div className="mt-4 rounded-lg bg-talent-surface/80 p-4 border-l-2 border-talent-purple transition-colors">
           <p className="font-sans text-xs leading-relaxed text-talent-subtext">
             {candidate.pitch ||
               'Candidate displays high direct capability alignment and transferable domain mastery in distributed platforms. Demonstrating rapid adaptability across production telemetry, their engineering profile proves strong resilience. Recommended for immediate zero-bias talent mobility transition.'}
@@ -196,9 +196,11 @@ export default function PitchCard({ candidate, roleId }) {
       {/* Card Actions Footer */}
       <div className="mt-6 flex items-center justify-between border-t border-talent-border pt-4">
         <button
+          type="button"
           onClick={handleToggleReveal}
           disabled={isLoadingIdentity}
-          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+          aria-label={isRevealed ? `Conceal candidate ${candidate.id} identity` : `Reveal candidate ${candidate.id} identity`}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal transition-all ${
             isRevealed
               ? 'bg-talent-surface text-talent-subtext border border-talent-border hover:text-talent-text'
               : 'bg-talent-purple/20 text-talent-purple border border-talent-purple/40 hover:bg-talent-purple/30 shadow-glow-purple'
@@ -224,7 +226,7 @@ export default function PitchCard({ candidate, roleId }) {
 
         <Link
           href={`/roadmap/${candidate.id}/${roleId || 'role-dist-arch'}`}
-          className="flex items-center gap-1 text-xs font-medium text-talent-teal hover:text-talent-teal-light transition-colors"
+          className="flex items-center gap-1 text-xs font-medium text-talent-teal hover:text-talent-teal-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-talent-teal rounded px-1.5 py-0.5 transition-colors"
         >
           <span>View Career GPS</span>
           <ArrowUpRight className="h-3.5 w-3.5" />
