@@ -112,7 +112,7 @@ The following matrix provides an explicit 1-to-1 mapping verifying every require
 | **SkillTree Graph Page** | `app/roadmap/[employeeId]/[roleId]/page.jsx` | Career GPS transition view between employee competencies and role. |
 | **Blind Match Pool Page** | `app/match/[roleId]/page.jsx` | Ranked candidate pool with anonymized `PitchCard` items and formula explainers. |
 | **Architecture Documentation** | `ARCHITECTURE.md` | Deep dive into Own AI vs Generative layer, scoring formula, and telemetry flow. |
-| **Automated Verification Suite** | `tests/score-match.test.js`, `tests/embeddings.test.js` | Pure function mathematical accuracy and embedding vector unit tests. |
+| **Automated Verification Suite** | `tests/score-match.test.mjs`, `tests/embeddings.test.mjs`, `tests/extract-skills.test.mjs`, `tests/generate-pitch.test.mjs` | Pure function mathematical accuracy, local embeddings, and bias-free synthesis unit tests. |
 
 ---
 

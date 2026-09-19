@@ -172,6 +172,8 @@ talentlens/
 │   ├── SkillTree.jsx                   ← Native SVG-connected directed graph
 │   └── PitchCard.jsx                   ← Anonymized candidate pitch with reveal toggle
 └── tests/
-    ├── score-match.test.js             ← Pure formula mathematical unit tests
-    └── embeddings.test.js              ← Vector normalization & similarity tests
+    ├── score-match.test.mjs            ← Pure formula mathematical unit tests
+    ├── embeddings.test.mjs             ← Vector normalization & similarity tests
+    ├── extract-skills.test.mjs         ← Strict-JSON extraction local path tests
+    └── generate-pitch.test.mjs         ← 3-sentence anonymized pitch bias tests
 ```
