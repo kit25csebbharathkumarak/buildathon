@@ -6,10 +6,36 @@ import PitchCard from '../../../components/PitchCard';
 import { embed } from '../../../lib/ai/embeddings';
 import { scoreMatch } from '../../../lib/ai/score-match';
 import { generatePitch } from '../../../lib/ai/generate-pitch';
-import { ArrowLeft, ShieldCheck, Scale, Cpu, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Scale } from 'lucide-react';
+
+/**
+ * Extracts vector from precomputed cache or live embed() fallback.
+ * @param {string|{name: string, embedding?: number[]}} skill - Skill entry.
+ * @returns {Promise<number[]>}
+ */
+async function getSkillVector(skill) {
+  if (typeof skill === 'object' && skill !== null && Array.isArray(skill.embedding) && skill.embedding.length === 384) {
+    return skill.embedding;
+  }
+  const text = typeof skill === 'object' && skill !== null ? (skill.name || skill.skill || '') : String(skill || '');
+  return embed(text);
+}
+
+/**
+ * Normalizes skill name from string or object representation.
+ * @param {string|{name: string}} skill - Skill entry.
+ * @returns {string}
+ */
+function getSkillName(skill) {
+  if (typeof skill === 'object' && skill !== null) {
+    return skill.name || skill.skill || '';
+  }
+  return String(skill || '');
+}
 
 /**
  * Blind Matching Pool page evaluating candidates under zero-bias criteria and displaying PitchCards.
+ * Personal identity fields are strictly excluded from the server payload to eliminate client-side leaks.
  * @param {Object} props - Page properties.
  * @param {{roleId: string}} props.params - Dynamic route parameters.
  * @returns {Promise<JSX.Element>}
@@ -21,60 +47,64 @@ export default async function MatchPage({ params }) {
     notFound();
   }
 
-  // Generate vectors for role required skills
+  // Read cached embeddings in parallel or fallback to live embed()
   const roleSkillVectors = await Promise.all(
-    (role.required_skills || []).map((skill) => embed(skill))
+    (role.required_skills || []).map(getSkillVector)
   );
 
-  // Compute pure mathematical scores and blind pitches for all candidates
-  const scoredCandidates = [];
+  const roleReqNames = (role.required_skills || []).map(getSkillName);
 
-  for (const emp of employees) {
-    const explicitVectors = await Promise.all(
-      (emp.explicit_skills || []).map((skill) => embed(skill))
-    );
-    const inferredVectors = await Promise.all(
-      (emp.inferred_skills || []).map((skill) => embed(skill))
-    );
+  // Compute pure mathematical scores and blind pitches for all candidates in parallel
+  const scoredCandidates = await Promise.all(
+    employees.map(async (emp) => {
+      const [explicitVectors, inferredVectors] = await Promise.all([
+        Promise.all((emp.explicit_skills || []).map(getSkillVector)),
+        Promise.all((emp.inferred_skills || []).map(getSkillVector)),
+      ]);
 
-    const scoreData = scoreMatch({
-      employeeSkillVectors: {
-        explicit: explicitVectors,
-        inferred: inferredVectors,
-      },
-      roleSkillVectors,
-      recencyScore: emp.recency_score || 0.88,
-      learningVelocity: emp.learning_velocity || 0.85,
-    });
+      const scoreData = scoreMatch({
+        employeeSkillVectors: {
+          explicit: explicitVectors,
+          inferred: inferredVectors,
+        },
+        roleSkillVectors,
+        recencyScore: emp.recency_score || 0.88,
+        learningVelocity: emp.learning_velocity || 0.85,
+      });
 
-    const allEmpSkills = [...(emp.explicit_skills || []), ...(emp.inferred_skills || [])];
-    const matchedSkillNames = role.required_skills.filter((req) =>
-      allEmpSkills.some(
-        (s) =>
-          s.toLowerCase().includes(req.toLowerCase()) ||
-          req.toLowerCase().includes(s.toLowerCase())
-      )
-    );
+      const allEmpSkillNames = [
+        ...(emp.explicit_skills || []).map(getSkillName),
+        ...(emp.inferred_skills || []).map(getSkillName),
+      ];
 
-    // Generate 3-sentence anonymized pitch (NO identity fields passed)
-    const pitch = await generatePitch({
-      role_description: `${role.title}: ${role.description}`,
-      matched_skills_with_breakdown: {
+      const matchedSkillNames = roleReqNames.filter((req) =>
+        allEmpSkillNames.some(
+          (s) =>
+            s.toLowerCase().includes(req.toLowerCase()) ||
+            req.toLowerCase().includes(s.toLowerCase())
+        )
+      );
+
+      // Generate 3-sentence anonymized pitch (NO identity fields passed)
+      const pitch = await generatePitch({
+        role_description: `${role.title}: ${role.description}`,
+        matched_skills_with_breakdown: {
+          score: scoreData.score,
+          breakdown: scoreData.breakdown,
+          matched_skills:
+            matchedSkillNames.length > 0 ? matchedSkillNames : allEmpSkillNames.slice(0, 3),
+        },
+      });
+
+      // CRITICAL: Strictly exclude emp.hidden to prevent blind matching data leak
+      return {
+        id: emp.id,
         score: scoreData.score,
         breakdown: scoreData.breakdown,
-        matched_skills:
-          matchedSkillNames.length > 0 ? matchedSkillNames : allEmpSkills.slice(0, 3),
-      },
-    });
-
-    scoredCandidates.push({
-      id: emp.id,
-      score: scoreData.score,
-      breakdown: scoreData.breakdown,
-      pitch,
-      hidden: emp.hidden,
-    });
-  }
+        pitch,
+      };
+    })
+  );
 
   // Sort descending by calculated score
   scoredCandidates.sort((a, b) => b.score - a.score);
@@ -130,12 +160,12 @@ export default async function MatchPage({ params }) {
               {role.description}
             </p>
             <div className="mt-4 flex flex-wrap gap-1.5">
-              {role.required_skills.map((skill, idx) => (
+              {(role.required_skills || []).map((skill, idx) => (
                 <span
                   key={idx}
                   className="rounded bg-talent-surface px-2.5 py-1 font-mono text-[11px] text-talent-subtext border border-talent-border"
                 >
-                  {skill}
+                  {getSkillName(skill)}
                 </span>
               ))}
             </div>

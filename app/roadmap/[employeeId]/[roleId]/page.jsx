@@ -12,6 +12,8 @@ import { ArrowLeft, Compass, CheckCircle2, Sparkles, User, Briefcase } from 'luc
  * @param {{employeeId: string, roleId: string}} props.params - Dynamic route parameters.
  * @returns {Promise<JSX.Element>}
  */
+const getSkillName = (s) => (typeof s === 'object' && s !== null ? (s.name || s.skill || '') : String(s || ''));
+
 export default async function RoadmapPage({ params }) {
   const employee = employees.find((e) => e.id === params.employeeId) || employees[0];
   const role = roles.find((r) => r.id === params.roleId) || roles[0];
@@ -23,13 +25,15 @@ export default async function RoadmapPage({ params }) {
   const currentSkills = [
     ...(employee.explicit_skills || []),
     ...(employee.inferred_skills || []),
-  ];
+  ].map(getSkillName);
+
+  const roleRequirements = (role.required_skills || []).map(getSkillName);
 
   // Generate Career GPS roadmap graph
   const roadmapData = await generateRoadmap({
     current_skills: currentSkills,
     target_role: role.title,
-    role_requirements: role.required_skills,
+    role_requirements: roleRequirements,
   });
 
   return (

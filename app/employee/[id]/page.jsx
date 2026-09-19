@@ -21,6 +21,8 @@ import {
  * @param {{id: string}} props.params - Dynamic route parameters.
  * @returns {JSX.Element}
  */
+const getSkillName = (s) => (typeof s === 'object' && s !== null ? (s.name || s.skill || '') : String(s || ''));
+
 export default function EmployeePage({ params }) {
   const employee = employees.find((e) => e.id === params.id) || employees[0];
 
@@ -130,7 +132,7 @@ export default function EmployeePage({ params }) {
                   className="flex items-center gap-1.5 rounded-lg border border-talent-teal/40 bg-talent-teal/10 px-3 py-1.5 text-xs font-semibold text-talent-teal shadow-glow-teal"
                 >
                   <span>✨</span>
-                  <span>{skill}</span>
+                  <span>{getSkillName(skill)}</span>
                 </div>
               ))}
             </div>
@@ -150,7 +152,7 @@ export default function EmployeePage({ params }) {
                   key={idx}
                   className="rounded-md border border-talent-border bg-talent-surface px-2.5 py-1 text-xs text-talent-subtext"
                 >
-                  {skill}
+                  {getSkillName(skill)}
                 </span>
               ))}
             </div>

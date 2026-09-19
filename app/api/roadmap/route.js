@@ -20,15 +20,17 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Employee or Role not found' }, { status: 404 });
     }
 
+    const getSkillName = (s) => (typeof s === 'object' && s !== null ? (s.name || s.skill || '') : String(s || ''));
+
     const currentSkills = [
       ...(employee.explicit_skills || []),
       ...(employee.inferred_skills || []),
-    ];
+    ].map(getSkillName);
 
     const roadmap = await generateRoadmap({
       current_skills: currentSkills,
       target_role: role.title,
-      role_requirements: role.required_skills,
+      role_requirements: (role.required_skills || []).map(getSkillName),
     });
 
     return NextResponse.json({

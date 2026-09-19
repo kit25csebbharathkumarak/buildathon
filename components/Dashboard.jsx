@@ -22,6 +22,8 @@ import {
  * @param {Array} props.roles - List of target role objects.
  * @returns {JSX.Element}
  */
+const getSkillName = (s) => (typeof s === 'object' && s !== null ? (s.name || s.skill || '') : String(s || ''));
+
 export default function Dashboard({ employees = [], roles = [] }) {
   const [selectedRole, setSelectedRole] = useState(roles[0]?.id || 'role-dist-arch');
 
@@ -193,7 +195,7 @@ export default function Dashboard({ employees = [], roles = [] }) {
                             key={i}
                             className="rounded bg-talent-surface px-2 py-0.5 text-[11px] text-talent-subtext border border-talent-border"
                           >
-                            {skill}
+                            {getSkillName(skill)}
                           </span>
                         ))}
                         {emp.explicit_skills.length > 3 && (
@@ -210,7 +212,7 @@ export default function Dashboard({ employees = [], roles = [] }) {
                             key={i}
                             className="rounded bg-talent-teal/10 px-2 py-0.5 text-[11px] font-medium text-talent-teal border border-talent-teal/20"
                           >
-                            ✨ {skill}
+                            ✨ {getSkillName(skill)}
                           </span>
                         ))}
                         {emp.inferred_skills.length > 2 && (
@@ -298,7 +300,7 @@ export default function Dashboard({ employees = [], roles = [] }) {
                         key={i}
                         className="rounded bg-talent-surface px-2 py-0.5 text-[10px] text-talent-subtext border border-talent-border"
                       >
-                        {req}
+                        {getSkillName(req)}
                       </span>
                     ))}
                     {role.required_skills.length > 3 && (
