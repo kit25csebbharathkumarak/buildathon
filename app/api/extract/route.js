@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import employees from '../../../data/employees.json';
+import { getEmployeeById, addInferredSkill, recordExtraction } from '../../../lib/db/queries';
 import { extractSkills } from '../../../lib/ai/extract-skills';
 
 // Dynamic ESM import of socket emitter matching lib/ai pattern
@@ -15,7 +15,8 @@ try {
 
 /**
  * API route to trigger real-time AI skill extraction for an employee's work logs.
- * Emits Socket.IO extraction:progress events per log entry.
+ * Emits Socket.IO extraction:progress events per log entry and permanently records
+ * discoveries in the SQLite database.
  * @param {Request} request - Next.js HTTP request.
  * @returns {Promise<NextResponse>} JSON response with extracted competencies.
  */
@@ -24,9 +25,9 @@ export async function POST(request) {
     const body = await request.json();
     const { employeeId } = body;
 
-    const employee = employees.find((e) => e.id === employeeId) || employees[0];
+    const employee = getEmployeeById(employeeId) || getEmployeeById('emp-001') || getEmployeeById('emp-101');
     if (!employee) {
-      return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Employee not found in database' }, { status: 404 });
     }
 
     const extractions = [];
@@ -48,6 +49,12 @@ export async function POST(request) {
       };
 
       extractions.push(extractionRecord);
+
+      // Persist newly discovered skill into SQLite database
+      if (result.detected_skill) {
+        addInferredSkill(employee.id, result.detected_skill);
+        recordExtraction(extractionRecord);
+      }
 
       // Emit realtime Socket.IO event
       emitExtractionProgress(extractionRecord);

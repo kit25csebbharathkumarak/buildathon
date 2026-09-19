@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import employees from '../../../../data/employees.json';
-import roles from '../../../../data/roles.json';
+import { getEmployeeById, getRoleById, getAllRoles } from '../../../../lib/db/queries';
 import SkillTree from '../../../../components/SkillTree';
 import { generateRoadmap } from '../../../../lib/ai/generate-roadmap';
 import { ArrowLeft, Compass, CheckCircle2, Sparkles, User, Briefcase } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Career GPS Roadmap page displaying interactive branching progression graph to target role.
+ * Queries candidate competencies and target role requirements directly from SQLite database.
  * @param {Object} props - Page properties.
  * @param {{employeeId: string, roleId: string}} props.params - Dynamic route parameters.
  * @returns {Promise<JSX.Element>}
@@ -15,8 +17,9 @@ import { ArrowLeft, Compass, CheckCircle2, Sparkles, User, Briefcase } from 'luc
 const getSkillName = (s) => (typeof s === 'object' && s !== null ? (s.name || s.skill || '') : String(s || ''));
 
 export default async function RoadmapPage({ params }) {
-  const employee = employees.find((e) => e.id === params.employeeId) || employees[0];
-  const role = roles.find((r) => r.id === params.roleId) || roles[0];
+  const roles = getAllRoles();
+  const employee = getEmployeeById(params.employeeId) || getEmployeeById('emp-001') || getEmployeeById('emp-101');
+  const role = getRoleById(params.roleId) || roles[0];
 
   if (!employee || !role) {
     notFound();

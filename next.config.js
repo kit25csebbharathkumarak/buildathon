@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    serverComponentsExternalPackages: ['@xenova/transformers', 'onnxruntime-node'],
+    serverComponentsExternalPackages: ['better-sqlite3', '@xenova/transformers', 'onnxruntime-node'],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

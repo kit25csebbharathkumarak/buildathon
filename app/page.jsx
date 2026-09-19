@@ -1,11 +1,15 @@
-import employees from '../data/employees.json';
-import roles from '../data/roles.json';
+import { getAllEmployees, getAllRoles } from '../lib/db/queries';
 import Dashboard from '../components/Dashboard';
 
+export const dynamic = 'force-dynamic';
+
 /**
- * TalentLens Dashboard page rendering employee overview and entry points to all 3 core features.
+ * TalentLens Dashboard page querying candidate directory and roles directly from SQLite database.
  * @returns {JSX.Element}
  */
 export default function Page() {
+  const employees = getAllEmployees();
+  const roles = getAllRoles();
+
   return <Dashboard employees={employees} roles={roles} />;
 }

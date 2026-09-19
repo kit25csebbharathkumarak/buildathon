@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import employees from '../../../data/employees.json';
-import roles from '../../../data/roles.json';
+import { getEmployeeById, getAllRoles } from '../../../lib/db/queries';
 import LiveExtractionFeed from '../../../components/LiveExtractionFeed';
 import {
   ArrowLeft,
@@ -15,8 +14,11 @@ import {
   Zap,
 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Employee Profile view rendering work telemetry, explicit/inferred skills, and the LiveExtractionFeed.
+ * Queries directly from SQLite relational tables.
  * @param {Object} props - Page properties.
  * @param {{id: string}} props.params - Dynamic route parameters.
  * @returns {JSX.Element}
@@ -24,12 +26,13 @@ import {
 const getSkillName = (s) => (typeof s === 'object' && s !== null ? (s.name || s.skill || '') : String(s || ''));
 
 export default function EmployeePage({ params }) {
-  const employee = employees.find((e) => e.id === params.id) || employees[0];
+  const employee = getEmployeeById(params.id) || getEmployeeById('emp-001') || getEmployeeById('emp-101');
 
   if (!employee) {
     notFound();
   }
 
+  const roles = getAllRoles();
   const defaultRole = roles[0]?.id || 'role-dist-arch';
 
   return (

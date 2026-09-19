@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import employees from '../../../data/employees.json';
-import roles from '../../../data/roles.json';
+import { getAllEmployees, getAllRoles, getRoleById } from '../../../lib/db/queries';
 import PitchCard from '../../../components/PitchCard';
 import { embed } from '../../../lib/ai/embeddings';
 import { scoreMatch } from '../../../lib/ai/score-match';
 import { generatePitch } from '../../../lib/ai/generate-pitch';
 import { ArrowLeft, ShieldCheck, Scale } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * Extracts vector from precomputed cache or live embed() fallback.
@@ -36,12 +37,15 @@ function getSkillName(skill) {
 /**
  * Blind Matching Pool page evaluating candidates under zero-bias criteria and displaying PitchCards.
  * Personal identity fields are strictly excluded from the server payload to eliminate client-side leaks.
+ * All candidate and role data is queried directly from SQLite database.
  * @param {Object} props - Page properties.
  * @param {{roleId: string}} props.params - Dynamic route parameters.
  * @returns {Promise<JSX.Element>}
  */
 export default async function MatchPage({ params }) {
-  const role = roles.find((r) => r.id === params.roleId) || roles[0];
+  const roles = getAllRoles();
+  const role = getRoleById(params.roleId) || roles[0];
+  const employees = getAllEmployees();
 
   if (!role) {
     notFound();
