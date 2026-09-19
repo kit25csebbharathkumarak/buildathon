@@ -1,6 +1,7 @@
 import './globals.css';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import Navbar from '../components/Navbar';
+import { AuthProvider } from '../context/AuthContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,26 +31,28 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="bg-talent-bg text-talent-text font-sans antialiased selection:bg-talent-teal/30 selection:text-white">
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-            {children}
-          </main>
-          <footer className="border-t border-talent-border bg-talent-surface py-6 text-center text-xs text-talent-muted">
-            <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-talent-text">TalentLens</span>
-                <span>•</span>
-                <span>Team: <strong className="text-talent-teal">4D Developers</strong></span>
-                <span>•</span>
-                <span>Hackathon MVP</span>
+        <AuthProvider>
+          <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+              {children}
+            </main>
+            <footer className="border-t border-talent-border bg-talent-surface py-6 text-center text-xs text-talent-muted">
+              <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-talent-text">TalentLens</span>
+                  <span>•</span>
+                  <span>Team: <strong className="text-talent-teal">4D Developers</strong></span>
+                  <span>•</span>
+                  <span>Hackathon MVP</span>
+                </div>
+                <div className="font-mono text-[11px] text-talent-subtext">
+                  Own AI Engine: @xenova/transformers (all-MiniLM-L6-v2)
+                </div>
               </div>
-              <div className="font-mono text-[11px] text-talent-subtext">
-                Own AI Engine: @xenova/transformers (all-MiniLM-L6-v2)
-              </div>
-            </div>
-          </footer>
-        </div>
+            </footer>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );
