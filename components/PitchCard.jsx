@@ -2,17 +2,19 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Eye, EyeOff, ShieldCheck, Zap, Activity, Award, ArrowUpRight } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, Zap, Activity, Award, ArrowUpRight, Loader2 } from 'lucide-react';
 
 /**
- * Renders an anonymized candidate pitch card with pure weighted telemetry breakdown and a secure identity reveal toggle.
+ * Renders an anonymized candidate pitch card with pure weighted telemetry breakdown and a secure on-demand identity reveal toggle.
  * @param {Object} props - Component properties.
- * @param {Object} props.candidate - Candidate data with ID, hidden metadata, scores, and pitch.
+ * @param {Object} props.candidate - Candidate data with ID, scores, breakdown, and pitch (strictly zero pre-loaded identity fields).
  * @param {string} props.roleId - Associated role ID.
  * @returns {JSX.Element}
  */
 export default function PitchCard({ candidate, roleId }) {
   const [isRevealed, setIsRevealed] = useState(false);
+  const [identity, setIdentity] = useState(null);
+  const [isLoadingIdentity, setIsLoadingIdentity] = useState(false);
 
   const score = candidate.score || 85;
   const breakdown = candidate.breakdown || {
@@ -26,6 +28,32 @@ export default function PitchCard({ candidate, roleId }) {
       recency: 18.0,
       velocity: 8.8,
     },
+  };
+
+  const handleToggleReveal = async () => {
+    if (isRevealed) {
+      setIsRevealed(false);
+      return;
+    }
+
+    if (identity) {
+      setIsRevealed(true);
+      return;
+    }
+
+    setIsLoadingIdentity(true);
+    try {
+      const res = await fetch(`/api/reveal/${candidate.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setIdentity(data);
+        setIsRevealed(true);
+      }
+    } catch (err) {
+      console.error('Failed to reveal identity:', err);
+    } finally {
+      setIsLoadingIdentity(false);
+    }
   };
 
   return (
@@ -46,13 +74,13 @@ export default function PitchCard({ candidate, roleId }) {
 
             {/* Revealed Identity or Anonymized Headline */}
             <div className="mt-3">
-              {isRevealed ? (
+              {isRevealed && identity ? (
                 <div className="animate-fadeIn">
                   <h3 className="text-lg font-bold text-talent-text">
-                    {candidate.hidden?.name || 'Candidate'}
+                    {identity.name}
                   </h3>
                   <p className="text-xs text-talent-teal font-medium">
-                    {candidate.hidden?.title} • {candidate.hidden?.age} yrs old
+                    {identity.title} • {identity.age} yrs old
                   </p>
                 </div>
               ) : (
@@ -168,14 +196,20 @@ export default function PitchCard({ candidate, roleId }) {
       {/* Card Actions Footer */}
       <div className="mt-6 flex items-center justify-between border-t border-talent-border pt-4">
         <button
-          onClick={() => setIsRevealed(!isRevealed)}
+          onClick={handleToggleReveal}
+          disabled={isLoadingIdentity}
           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
             isRevealed
               ? 'bg-talent-surface text-talent-subtext border border-talent-border hover:text-talent-text'
               : 'bg-talent-purple/20 text-talent-purple border border-talent-purple/40 hover:bg-talent-purple/30 shadow-glow-purple'
           }`}
         >
-          {isRevealed ? (
+          {isLoadingIdentity ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <span>Fetching Identity...</span>
+            </>
+          ) : isRevealed ? (
             <>
               <EyeOff className="h-3.5 w-3.5" />
               <span>Conceal Identity</span>
