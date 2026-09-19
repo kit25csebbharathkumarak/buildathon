@@ -25,8 +25,8 @@ module.exports = {
         'talent-subtext': '#A1ADC1',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
       },
       boxShadow: {
         'glow-teal': '0 0 20px -3px rgba(29, 158, 117, 0.35)',

@@ -1,5 +1,18 @@
 import './globals.css';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import Navbar from '../components/Navbar';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export const metadata = {
   title: 'TalentLens — AI-Powered Internal Talent Discovery & Mobility',
@@ -15,8 +28,8 @@ export const metadata = {
  */
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-talent-bg text-talent-text antialiased selection:bg-talent-teal/30 selection:text-white">
+    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="bg-talent-bg text-talent-text font-sans antialiased selection:bg-talent-teal/30 selection:text-white">
         <div className="flex min-h-screen flex-col">
           <Navbar />
           <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
